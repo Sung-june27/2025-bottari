@@ -17,7 +17,7 @@ class TeamMembersStatusFragment :
     BaseFragment<FragmentTeamMembersStatusBinding>(
         FragmentTeamMembersStatusBinding::inflate,
     ),
-    TeamMemberStatusViewHolder.OnSendRemindClickListener {
+    TeamMemberStatusViewHolder.MemberStatusClickListener {
     private val viewModel: TeamMembersStatusViewModel by viewModels {
         TeamMembersStatusViewModel.Factory(requireArguments().getLong(ARG_TEAM_BOTTARI_ID))
     }
@@ -32,13 +32,12 @@ class TeamMembersStatusFragment :
         setupUI()
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchTeamMembersStatus()
+    override fun onClickMember(id: Long) {
+        viewModel.updateExpandState(id)
     }
 
     override fun onClickSendRemind(member: TeamMemberUiModel) {
-        viewModel.sendRemindMessage(member)
+        viewModel.debouncedSendRemindMessage(member)
     }
 
     private fun setupObserver() {
@@ -61,6 +60,9 @@ class TeamMembersStatusFragment :
 
                 TeamMembersStatusUiEvent.SendRemindByMemberMessageFailure ->
                     requireView().showSnackbar(R.string.team_members_status_send_remind_message_failure_text)
+
+                TeamMembersStatusUiEvent.FetchMemberIdFailure ->
+                    requireView().showSnackbar(R.string.team_members_status_fetch_member_id_failure_text)
             }
         }
     }

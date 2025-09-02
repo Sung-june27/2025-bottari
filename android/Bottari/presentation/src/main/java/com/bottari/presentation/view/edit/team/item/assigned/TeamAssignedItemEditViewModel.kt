@@ -8,7 +8,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.bottari.di.UseCaseProvider
 import com.bottari.domain.model.bottari.BottariItem
 import com.bottari.domain.model.bottari.BottariItemType
+import com.bottari.domain.model.event.EventData
+import com.bottari.domain.model.event.EventState
 import com.bottari.domain.model.team.TeamMember
+import com.bottari.domain.usecase.event.ConnectTeamEventUseCase
 import com.bottari.domain.usecase.team.CreateTeamAssignedItemUseCase
 import com.bottari.domain.usecase.team.DeleteTeamBottariItemUseCase
 import com.bottari.domain.usecase.team.FetchTeamAssignedItemsUseCase
@@ -20,7 +23,14 @@ import com.bottari.presentation.mapper.TeamMembersMapper.toUiModel
 import com.bottari.presentation.model.BottariItemTypeUiModel
 import com.bottari.presentation.model.BottariItemUiModel
 import com.bottari.presentation.model.TeamMemberUiModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 class TeamAssignedItemEditViewModel(
     stateHandle: SavedStateHandle,
@@ -29,6 +39,7 @@ class TeamAssignedItemEditViewModel(
     private val deleteTeamBottariItemUseCase: DeleteTeamBottariItemUseCase,
     private val fetchTeamBottariMembersUseCase: FetchTeamBottariMembersUseCase,
     private val saveTeamBottariAssignedItemUseCase: SaveTeamBottariAssignedItemUseCase,
+    private val connectTeamEventUseCase: ConnectTeamEventUseCase,
 ) : BaseViewModel<TeamAssignedItemEditUiState, TeamAssignedItemEditEvent>(
         TeamAssignedItemEditUiState(),
     ) {
@@ -36,6 +47,7 @@ class TeamAssignedItemEditViewModel(
 
     init {
         refreshAssignedItemsAndMembers()
+        handleEvent()
     }
 
     fun updateInput(input: String) {
@@ -107,6 +119,12 @@ class TeamAssignedItemEditViewModel(
                 currentState.inputText,
                 currentState.selectedMemberIds,
             ).onSuccess {
+                updateState {
+                    copy(
+                        members = members.map { it.copy(isHost = false) },
+                        assignedItems = assignedItems.map { it.copy(isSelected = false) },
+                    )
+                }
                 refreshAssignedItemsAndMembers()
                 emitEvent(TeamAssignedItemEditEvent.SaveItemSuccess)
             }.onFailure {
@@ -129,13 +147,45 @@ class TeamAssignedItemEditViewModel(
 
             updateState {
                 copy(
-                    assignedItems = assignedItems.map { it.toUiModel() },
-                    members = members.map { it.toUiModel() },
+                    assignedItems = syncAssignedItems(assignedItems.map { it.toUiModel() }),
+                    members = syncMembers(members.map { it.toUiModel() }),
                     isFetched = true,
                 )
             }
 
             updateState { copy(isLoading = false, isFetched = true) }
+        }
+    }
+
+    private fun syncAssignedItems(items: List<BottariItemUiModel>): List<BottariItemUiModel> {
+        val currentState =
+            items.map { item ->
+                val found = currentState.selectedAssignedItem ?: return@map item
+                if (found.id == item.id) item.copy(isSelected = true) else item
+            }
+
+        return currentState
+    }
+
+    private fun syncMembers(members: List<TeamMemberUiModel>): List<TeamMemberUiModel> {
+        val currentState =
+            members.map { member ->
+                val found = currentState.members.find { it.id == member.id } ?: return@map member
+                member.copy(isHost = found.isHost)
+            }
+        return currentState
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun handleEvent() {
+        launch {
+            connectTeamEventUseCase(bottariId)
+                .filterIsInstance<EventState.OnEvent>()
+                .map { event -> event.data }
+                .filterNot { eventData -> eventData.shouldIgnore() }
+                .debounce(DEBOUNCE_DELAY)
+                .onEach { refreshAssignedItemsAndMembers() }
+                .launchIn(this)
         }
     }
 
@@ -180,9 +230,20 @@ class TeamAssignedItemEditViewModel(
     private fun mapMembersWithAssignedIds(ids: List<Long>): List<TeamMemberUiModel> =
         currentState.members.map { it.copy(isHost = it.id in ids) }
 
+    private fun EventData.shouldIgnore(): Boolean =
+        when (this) {
+            is EventData.SharedItemChange,
+            is EventData.SharedItemInfoCreate,
+            is EventData.SharedItemInfoDelete,
+            -> true
+
+            else -> false
+        }
+
     companion object {
         private const val KEY_BOTTARI_ID = "KEY_BOTTARI_ID"
         private const val ERROR_BOTTARI_ID = "[ERROR] bottariId가 존재하지 않습니다"
+        private const val DEBOUNCE_DELAY = 300L
 
         fun Factory(bottariId: Long): ViewModelProvider.Factory =
             viewModelFactory {
@@ -196,6 +257,7 @@ class TeamAssignedItemEditViewModel(
                         UseCaseProvider.deleteTeamBottariItemUseCase,
                         UseCaseProvider.fetchTeamBottariMembersUseCase,
                         UseCaseProvider.saveTeamBottariAssignedItemUseCase,
+                        UseCaseProvider.connectTeamEventUseCase,
                     )
                 }
             }

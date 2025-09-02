@@ -14,30 +14,32 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 
 class TeamMemberStatusViewHolder private constructor(
-    onSendRemindClickListener: OnSendRemindClickListener,
+    memberStatusClickListener: MemberStatusClickListener,
     private val binding: ItemTeamMemberStatusBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
     private val sharedItemAdapter: SharedItemAdapter by lazy { SharedItemAdapter() }
     private val assignedItemAdapter: AssignedItemAdapter by lazy { AssignedItemAdapter() }
-    private var member: TeamMemberUiModel? = null
+    private var memberStatus: TeamMemberStatusUiModel? = null
 
     init {
         itemView.setOnClickListener {
-            binding.groupItems.apply { isVisible = !isVisible }
+            memberStatus?.member?.id?.let(memberStatusClickListener::onClickMember)
         }
         binding.btnHurryUpAlert.setOnClickListener {
-            member?.let(onSendRemindClickListener::onClickSendRemind)
+            memberStatus?.member?.let(memberStatusClickListener::onClickSendRemind)
         }
         setupSharedItems()
         setupAssignedItems()
     }
 
     fun bind(status: TeamMemberStatusUiModel) {
-        member = status.member
+        memberStatus = status
         itemView.isClickable = status.isItemsEmpty.not()
         binding.tvMemberNickname.text = status.member.nickname
         binding.ivTeamHost.isVisible = status.member.isHost
+        handleItemsStatus(status)
         handleItemsCountStatus(status)
+        binding.btnHurryUpAlert.isVisible = status.shouldHurryUp && status.isExpanded
         sharedItemAdapter.submitList(status.sharedItems)
         assignedItemAdapter.submitList(status.assignedItems)
     }
@@ -54,6 +56,15 @@ class TeamMemberStatusViewHolder private constructor(
                 status.checkedItemsCount,
                 status.totalItemsCount,
             )
+    }
+
+    private fun handleItemsStatus(status: TeamMemberStatusUiModel) {
+        binding.apply {
+            rvSharedItems.isVisible = status.isExpanded
+            rvAssignedItems.isVisible = status.isExpanded
+            mdItems.isVisible = status.isExpanded
+            btnHurryUpAlert.isVisible = status.isExpanded
+        }
     }
 
     private fun setupSharedItems() {
@@ -76,15 +87,17 @@ class TeamMemberStatusViewHolder private constructor(
     companion object {
         fun from(
             parent: ViewGroup,
-            onSendRemindClickListener: OnSendRemindClickListener,
+            memberStatusClickListener: MemberStatusClickListener,
         ): TeamMemberStatusViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ItemTeamMemberStatusBinding.inflate(inflater, parent, false)
-            return TeamMemberStatusViewHolder(onSendRemindClickListener, binding)
+            return TeamMemberStatusViewHolder(memberStatusClickListener, binding)
         }
     }
 
-    fun interface OnSendRemindClickListener {
+    interface MemberStatusClickListener {
+        fun onClickMember(id: Long)
+
         fun onClickSendRemind(member: TeamMemberUiModel)
     }
 }

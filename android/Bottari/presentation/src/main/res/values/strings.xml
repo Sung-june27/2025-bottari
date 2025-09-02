@@ -114,7 +114,7 @@
     <string name="common_team_bottari_notification_item_changed_message_text">챙겨야 할 물건이 변경되었어요.</string>
     <string name="common_team_bottari_notification_send_remind_by_member_message_text">아직 챙기지 않은 물건이 있어요.</string>
     <string name="common_team_bottari_notification_send_remind_by_item_message_text">%s 챙겨 주세요.</string>
-
+    <string name="common_team_bottari_notification_exit_team_bottari_message_text">%s님이 %s에서 나갔어요.</string>
     <!--  Splash Screen  -->
     <string name="splash_screen_permission_denied_text">권한이 거부되어 일부 기능이 제한돼요.\n기능 사용 시 다시 요청드릴게요.</string>
 
@@ -135,6 +135,7 @@
     <string name="bottari_home_delete_failure_text">보따리를 삭제하지 못했어요</string>
     <string name="bottari_home_empty_view_title_text">보따리가 없습니다</string>
     <string name="bottari_home_empty_view_description_text">오른쪽 아래 버튼을 눌러 새 보따리를 만들거나,\n‘모두의 보따리’에서 원하는 보따리를 가져와보세요!</string>
+    <string name="bottari_home_exit_confirm_text">한 번 더 누르면 앱이 종료돼요</string>
 
     <!-- Bottari Item -->
     <string name="bottari_item_alarm_repeat_everyday_text">매일 알람</string>
@@ -178,6 +179,12 @@
     <string name="team_bottari_join_dialog_name_hint_text">초대 코드를 입력해 주세요</string>
     <string name="team_bottari_join_dialog_btn_text">참가하기</string>
 
+    <!-- Force Update Dialog -->
+    <string name="force_update_dialog_title_text">업데이트가 필요해요</string>
+    <string name="force_update_dialog_description_text">원활한 서비스 이용을 위해\n최신 버전으로 업데이트해 주세요</string>
+    <string name="force_update_dialog_update_btn_text">업데이트하기</string>
+    <string name="force_update_dialog_close_btn_text">앱 종료</string>
+
     <!-- Bottari Edit -->
     <string name="bottari_edit_item_list_title">내 물건</string>
     <string name="bottari_edit_add_item_title">물건 추가하기</string>
@@ -207,8 +214,9 @@
 
     <!-- Team Bottari -->
     <string name="team_checklist_tap_checklist_text">체크리스트</string>
-    <string name="team_checklist_tap_team_current_text">팀 보따리 현황</string>
+    <string name="team_checklist_tap_team_current_text">물건 현황</string>
     <string name="team_checklist_tap_member_checklist_text">멤버 현황</string>
+    <string name="team_checklist_empty_view_title_text">이곳은 아직 비어있어요.</string>
 
     <!-- Bottari Item Type -->
     <string name="bottari_item_type_shared_text">공통</string>
@@ -235,6 +243,7 @@
     <string name="team_members_status_fetch_failure_text">팀원 현황을 조회하는데 실패했어요</string>
     <string name="team_members_status_send_remind_message_success_text">%s에게 알림을 전송했어요</string>
     <string name="team_members_status_send_remind_message_failure_text">보채기에 실패했어요</string>
+    <string name="team_members_status_fetch_member_id_failure_text">내 아이디 불러오기에 실패했어요</string>
 
     <!-- Alarm Edit -->
     <string name="alarm_edit_title_text">알람 설정</string>
@@ -298,9 +307,11 @@
 
     <!-- Team Bottari -->
     <string name="team_product_status_format">%d / %d</string>
-    <string name="team_status_fetch_failure_text">팀 보따리 현황을 불러오지 못했어요</string>
-    <string name="team_status_send_remind_success_text">알람을 설정했어요</string>
-    <string name="team_status_send_remind_failure_text">알람을 설정하지 못했어요</string>
+    <string name="team_product_status_fetch_failure_text">물건 현황을 불러오지 못했어요</string>
+    <string name="team_status_empty_view_title">확인할 물건이 보이지 않아요</string>
+    <string name="team_status_empty_view_text">팀원들과 함께 보따리를 만들어보세요!</string>
+    <string name="team_status_send_remind_success_text">알림을 전송했어요</string>
+    <string name="team_status_send_remind_failure_text">보채기에 실패했어</string>
     <string name="team_status_send_remind_btn_text">보채기</string>
 
     <!-- Team Bottari Fab -->

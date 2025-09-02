@@ -19,6 +19,11 @@ class NotificationHelper(
     private val manager: NotificationManager =
         context.getSystemService(NotificationManager::class.java)
 
+    fun getString(
+        resId: Int,
+        vararg formatArgs: Any,
+    ): String = context.getString(resId, *formatArgs)
+
     fun sendPersonalNotification(
         bottariId: Long,
         bottariTitle: String,
@@ -37,7 +42,8 @@ class NotificationHelper(
         createTeamNotificationChannel()
         val pendingIntent = createTeamPendingIntent(teamBottariId, teamBottariTitle)
         val notification = createTeamNotification(pendingIntent, teamBottariTitle, message)
-        manager.notify(teamBottariId.toInt(), notification)
+        val notificationId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
+        manager.notify(notificationId, notification)
     }
 
     private fun createPersonalNotificationChannel() {
@@ -109,8 +115,12 @@ class NotificationHelper(
         NotificationCompat
             .Builder(context, TEAM_BOTTARI_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_bottari_logo)
-            .setContentTitle(context.getString(R.string.common_team_bottari_notification_title_text, bottariTitle))
-            .setContentText(message)
+            .setContentTitle(
+                context.getString(
+                    R.string.common_team_bottari_notification_title_text,
+                    bottariTitle,
+                ),
+            ).setContentText(message)
             .setContentIntent(intent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)

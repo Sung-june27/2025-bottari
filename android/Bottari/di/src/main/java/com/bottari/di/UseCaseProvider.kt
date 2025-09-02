@@ -3,6 +3,7 @@ package com.bottari.di
 import com.bottari.domain.usecase.alarm.CreateAlarmUseCase
 import com.bottari.domain.usecase.alarm.SaveAlarmUseCase
 import com.bottari.domain.usecase.alarm.ToggleAlarmStateUseCase
+import com.bottari.domain.usecase.appConfig.CheckForceUpdateUseCase
 import com.bottari.domain.usecase.appConfig.GetPermissionFlagUseCase
 import com.bottari.domain.usecase.appConfig.SavePermissionFlagUseCase
 import com.bottari.domain.usecase.bottari.CreateBottariUseCase
@@ -11,6 +12,8 @@ import com.bottari.domain.usecase.bottari.FetchBottariDetailsUseCase
 import com.bottari.domain.usecase.bottari.FetchBottariesUseCase
 import com.bottari.domain.usecase.bottari.SaveBottariTitleUseCase
 import com.bottari.domain.usecase.bottariDetail.FetchBottariDetailUseCase
+import com.bottari.domain.usecase.event.ConnectTeamEventUseCase
+import com.bottari.domain.usecase.event.DisconnectTeamEventUseCase
 import com.bottari.domain.usecase.fcm.SaveFcmTokenUseCase
 import com.bottari.domain.usecase.item.CheckBottariItemUseCase
 import com.bottari.domain.usecase.item.FetchChecklistUseCase
@@ -18,7 +21,8 @@ import com.bottari.domain.usecase.item.ResetBottariItemCheckStateUseCase
 import com.bottari.domain.usecase.item.SaveBottariItemsUseCase
 import com.bottari.domain.usecase.item.UnCheckBottariItemUseCase
 import com.bottari.domain.usecase.member.CheckRegisteredMemberUseCase
-import com.bottari.domain.usecase.member.GetMemberIdentifierUseCase
+import com.bottari.domain.usecase.member.GetInstallationIdUseCase
+import com.bottari.domain.usecase.member.GetMemberIdUseCase
 import com.bottari.domain.usecase.member.RegisterMemberUseCase
 import com.bottari.domain.usecase.member.SaveMemberNicknameUseCase
 import com.bottari.domain.usecase.notification.DeleteNotificationUseCase
@@ -30,6 +34,7 @@ import com.bottari.domain.usecase.team.CreateTeamBottariUseCase
 import com.bottari.domain.usecase.team.CreateTeamPersonalItemUseCase
 import com.bottari.domain.usecase.team.CreateTeamSharedItemUseCase
 import com.bottari.domain.usecase.team.DeleteTeamBottariItemUseCase
+import com.bottari.domain.usecase.team.ExitTeamBottariUseCase
 import com.bottari.domain.usecase.team.FetchTeamAssignedItemsUseCase
 import com.bottari.domain.usecase.team.FetchTeamBottariDetailUseCase
 import com.bottari.domain.usecase.team.FetchTeamBottariMembersUseCase
@@ -242,8 +247,11 @@ object UseCaseProvider {
     val sendRemindByMemberMessageUseCase: SendRemindByMemberMessageUseCase by lazy {
         SendRemindByMemberMessageUseCase(RepositoryProvider.teamBottariRepository)
     }
-    val getMemberIdentifierUseCase: GetMemberIdentifierUseCase by lazy {
-        GetMemberIdentifierUseCase(RepositoryProvider.memberRepository)
+    val getInstallationIdUseCase: GetInstallationIdUseCase by lazy {
+        GetInstallationIdUseCase(RepositoryProvider.memberRepository)
+    }
+    val getMemberIdUseCase: GetMemberIdUseCase by lazy {
+        GetMemberIdUseCase(RepositoryProvider.memberRepository)
     }
     val joinTeamBottariUseCase: JoinTeamBottariUseCase by lazy {
         JoinTeamBottariUseCase(RepositoryProvider.teamBottariRepository)
@@ -256,5 +264,17 @@ object UseCaseProvider {
     }
     val resetBottariItemCheckStateUseCase: ResetBottariItemCheckStateUseCase by lazy {
         ResetBottariItemCheckStateUseCase(RepositoryProvider.bottariItemRepository)
+    }
+    val checkForceUpdateUseCase: CheckForceUpdateUseCase by lazy {
+        CheckForceUpdateUseCase(RepositoryProvider.remoteConfigRepository)
+    }
+    val exitTeamBottariUseCase: ExitTeamBottariUseCase by lazy {
+        ExitTeamBottariUseCase(RepositoryProvider.teamBottariRepository)
+    }
+    val connectTeamEventUseCase: ConnectTeamEventUseCase by lazy {
+        ConnectTeamEventUseCase(RepositoryProvider.eventRepository)
+    }
+    val disconnectTeamEventUseCase: DisconnectTeamEventUseCase by lazy {
+        DisconnectTeamEventUseCase(RepositoryProvider.eventRepository)
     }
 }

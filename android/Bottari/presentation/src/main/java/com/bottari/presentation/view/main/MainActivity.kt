@@ -1,10 +1,12 @@
 package com.bottari.presentation.view.main
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.bottari.presentation.R
 import com.bottari.presentation.common.base.BaseActivity
@@ -53,13 +55,27 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         viewModel.uiEvent.observe(this) { uiEvent ->
             when (uiEvent) {
                 is MainUiEvent.LoginSuccess -> checkPermissionAndNavigate(uiEvent.permissionFlag)
-                MainUiEvent.LoginFailure -> Unit
-                MainUiEvent.RegisterFailure -> finishAffinity()
-                MainUiEvent.GetPermissionFlagFailure -> Unit
-                MainUiEvent.SavePermissionFlagFailure -> Unit
                 MainUiEvent.IncompletePermissionFlow -> showPermissionDescriptionDialog()
+                MainUiEvent.ForceUpdate -> showForceUpdateDialog()
+                MainUiEvent.RegisterFailure,
+                MainUiEvent.LoginFailure,
+                MainUiEvent.GetPermissionFlagFailure,
+                MainUiEvent.SavePermissionFlagFailure,
+                -> finishAffinity()
             }
         }
+    }
+
+    private fun showForceUpdateDialog() {
+        CustomAlertDialog
+            .newInstance(DialogPresetType.FORCE_UPDATE)
+            .setDialogListener(
+                object : DialogListener {
+                    override fun onClickNegative() = finishAffinity()
+
+                    override fun onClickPositive() = launchPlayStore()
+                },
+            ).show(supportFragmentManager, DialogPresetType.FORCE_UPDATE.name)
     }
 
     private fun showPermissionDescriptionDialog() {
@@ -75,13 +91,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private fun checkPermissionAndNavigate(permissionFlag: Boolean) {
         if (!hasRequiredPermission(permissionFlag)) {
             binding.root.showSnackbar(R.string.splash_screen_permission_denied_text) {
-                handleDeeplink()
-                navigateToHome()
+                if (!checkDeeplink()) navigateToHome()
             }
             return
         }
-        handleDeeplink()
-        navigateToHome()
+        if (!checkDeeplink()) navigateToHome()
     }
 
     private fun showExactAlarmSettingsDialog() {
@@ -89,9 +103,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             .newInstance(DialogPresetType.NAVIGATE_TO_ALARM_SETTINGS)
             .setDialogListener(
                 object : DialogListener {
-                    override fun onClickNegative() {
-                        viewModel.checkRegisteredMember()
-                    }
+                    override fun onClickNegative() = viewModel.checkRegisteredMember()
 
                     override fun onClickPositive() {
                         PermissionUtil.requestExactAlarmPermission(this@MainActivity)
@@ -104,11 +116,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     private fun hasRequiredPermission(permissionFlag: Boolean) =
         permissionFlag || (hasAllRuntimePermissions(this) && hasExactAlarmPermission(this))
 
-    private fun handleDeeplink() {
+    private fun checkDeeplink(): Boolean {
         intent.data?.let { uri ->
-            if (validateUri(uri).not()) return
-            navigateToInvite(uri)
+            if (validateUri(uri)) {
+                navigateToInvite(uri)
+                return true
+            }
         }
+        return false
     }
 
     private fun navigateToHome() {
@@ -122,5 +137,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         val intent = InviteActivity.newIntent(this, inviteCode)
         startActivity(intent)
         finish()
+    }
+
+    private fun launchPlayStore() {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = "market://details?id=$packageName".toUri()
+        startActivity(intent)
+        finishAffinity()
     }
 }

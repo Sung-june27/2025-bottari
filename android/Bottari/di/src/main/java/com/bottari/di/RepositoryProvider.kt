@@ -5,9 +5,11 @@ import com.bottari.data.repository.AppConfigRepositoryImpl
 import com.bottari.data.repository.BottariItemRepositoryImpl
 import com.bottari.data.repository.BottariRepositoryImpl
 import com.bottari.data.repository.BottariTemplateRepositoryImpl
+import com.bottari.data.repository.EventRepositoryImpl
 import com.bottari.data.repository.FcmRepositoryImpl
 import com.bottari.data.repository.MemberRepositoryImpl
 import com.bottari.data.repository.NotificationRepositoryImpl
+import com.bottari.data.repository.RemoteConfigRepositoryImpl
 import com.bottari.data.repository.ReportRepositoryImpl
 import com.bottari.data.repository.TeamBottariRepositoryImpl
 import com.bottari.domain.repository.AlarmRepository
@@ -15,9 +17,11 @@ import com.bottari.domain.repository.AppConfigRepository
 import com.bottari.domain.repository.BottariItemRepository
 import com.bottari.domain.repository.BottariRepository
 import com.bottari.domain.repository.BottariTemplateRepository
+import com.bottari.domain.repository.EventRepository
 import com.bottari.domain.repository.FcmRepository
 import com.bottari.domain.repository.MemberRepository
 import com.bottari.domain.repository.NotificationRepository
+import com.bottari.domain.repository.RemoteConfigRepository
 import com.bottari.domain.repository.ReportRepository
 import com.bottari.domain.repository.TeamBottariRepository
 
@@ -61,6 +65,15 @@ object RepositoryProvider {
         )
     }
     val fcmRepository: FcmRepository by lazy {
-        FcmRepositoryImpl(DataSourceProvider.fcmRemoteDataSource)
+        FcmRepositoryImpl(
+            DataSourceProvider.fcmRemoteDataSource,
+            DataSourceProvider.memberIdentifierLocalDataSource,
+        )
+    }
+    val remoteConfigRepository: RemoteConfigRepository by lazy {
+        RemoteConfigRepositoryImpl(DataSourceProvider.firebaseRemoteConfigDataSource)
+    }
+    val eventRepository: EventRepository by lazy {
+        EventRepositoryImpl(DataSourceProvider.eventRemoteDataSource)
     }
 }
