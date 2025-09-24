@@ -15,7 +15,12 @@ spring:
   sql:
     init:
       mode: never
+
 management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health
   metrics:
     enable:
       all: false
