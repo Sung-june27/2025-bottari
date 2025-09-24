@@ -59,8 +59,11 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT_JSON='${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' \
           SPRING_PROFILES_ACTIVE=dev \
           nohup java -Duser.timezone=Asia/Seoul \
-          -javaagent:/home/ubuntu/pinpoint-agent-3.0.3/pinpoint-bootstrap-3.0.3.jar \
-          -Dpinpoint.config=/home/ubuntu/pinpoint-agent-3.0.3/pinpoint-root.config \
-          -Dpinpoint.agentId=dev-bottari-1 \
-          -Dpinpoint.applicationName=dev-bottari \
+          -javaagent:/home/ubuntu/otel-agent/opentelemetry-javaagent.jar \
+          -Dotel.service.name=dev-bottari-app \
+          -Dotel.traces.exporter=otlp \
+          -Dotel.metrics.exporter=none \
+          -Dotel.logs.exporter=none \
+          -Dotel.exporter.otlp.endpoint='${{ secrets.DEV_OTLP_ENDPOINT }}' \
+          -Dmanagement.opentelemetry.instrumentation.logging.enabled=false \
           -jar "$JAR_FILE" --server.port=8080 > app.log 2>&1 &
