@@ -75,13 +75,11 @@ public class TeamAssignedItemService {
         final List<String> requestAssignedMemberNames = getRequestAssignedMemberNames(request.memberIds());
         final List<TeamMember> teamMembers = getAssignedTeamMembersByRequest(requestAssignedMemberNames, teamBottari);
         final TeamAssignedItemInfo savedTeamAssignedItemInfo = saveTeamAssignedItemInfo(request.name(), teamBottari);
-        saveAssignedItemToTeamMembers(savedTeamAssignedItemInfo, teamMembers);
-        applicationEventPublisher.publishEvent(new CreateAssignedItemEvent(
-                teamBottari.getId(),
-                savedTeamAssignedItemInfo.getId(),
-                savedTeamAssignedItemInfo.getName(),
-                request.memberIds()
-        ));
+        final List<TeamAssignedItem> savedTeamAssignedItems = saveAssignedItemToTeamMembers(
+                savedTeamAssignedItemInfo,
+                teamMembers
+        );
+        publishCreateEvent(savedTeamAssignedItemInfo, savedTeamAssignedItems);
 
         return savedTeamAssignedItemInfo.getId();
     }
@@ -109,6 +107,13 @@ public class TeamAssignedItemService {
         validateMemberInTeam(teamAssignedItemInfo.getTeamBottari().getId(), ssaid);
         teamAssignedItemRepository.deleteAllByInfo(teamAssignedItemInfo);
         teamAssignedItemInfoRepository.delete(teamAssignedItemInfo);
+        publishDeleteEvent(id, teamAssignedItemInfo);
+    }
+
+    private void publishDeleteEvent(
+            final Long id,
+            final TeamAssignedItemInfo teamAssignedItemInfo
+    ) {
         applicationEventPublisher.publishEvent(new DeleteAssignedItemEvent(
                 teamAssignedItemInfo.getTeamBottari().getId(),
                 id,
@@ -250,14 +255,15 @@ public class TeamAssignedItemService {
         }
     }
 
-    private void saveAssignedItemToTeamMembers(
+    private List<TeamAssignedItem> saveAssignedItemToTeamMembers(
             final TeamAssignedItemInfo savedTeamAssignedItemInfo,
             final List<TeamMember> teamMembers
     ) {
         final List<TeamAssignedItem> teamAssignedItems = teamMembers.stream()
                 .map(member -> new TeamAssignedItem(savedTeamAssignedItemInfo, member))
                 .toList();
-        teamAssignedItemRepository.saveAll(teamAssignedItems);
+
+        return teamAssignedItemRepository.saveAll(teamAssignedItems);
     }
 
     private void publishCheckEvent(final TeamAssignedItem item) {
@@ -320,6 +326,7 @@ public class TeamAssignedItemService {
     }
 
     // 삭제할 담당자 계산: (현재 담당자) - (요청된 담당자)
+
     private void deleteItemsToRemove(
             final Set<Long> currentAssignedMemberIds,
             final Set<Long> requestedAssignMemberIds,
@@ -334,8 +341,8 @@ public class TeamAssignedItemService {
             teamAssignedItemRepository.deleteAllInBatch(itemsToRemove);
         }
     }
-
     // 추가할 담당자 계산: (요청된 담당자) - (현재 담당자)
+
     private void createItemsToAdd(
             final TeamAssignedItemInfo teamAssignedItemInfo,
             final Set<Long> currentTeamMemberIds,
@@ -441,5 +448,20 @@ public class TeamAssignedItemService {
         if (!teamMemberRepository.existsByTeamBottariIdAndMemberId(teamBottari.getId(), member.getId())) {
             throw new BusinessException(ErrorCode.MEMBER_NOT_IN_TEAM_BOTTARI);
         }
+    }
+
+    private void publishCreateEvent(
+            final TeamAssignedItemInfo savedTeamAssignedItemInfo,
+            final List<TeamAssignedItem> savedTeamAssignedItems
+    ) {
+        final List<Long> itemIds = savedTeamAssignedItems.stream()
+                .map(TeamAssignedItem::getId)
+                .toList();
+        applicationEventPublisher.publishEvent(new CreateAssignedItemEvent(
+                savedTeamAssignedItemInfo.getTeamBottari().getId(),
+                savedTeamAssignedItemInfo.getId(),
+                savedTeamAssignedItemInfo.getName(),
+                itemIds
+        ));
     }
 }

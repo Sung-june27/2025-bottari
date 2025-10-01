@@ -4,15 +4,13 @@ import com.bottari.teambottari.event.CreateTeamSharedItemEvent;
 import java.time.LocalDateTime;
 
 public record CreateTeamSharedItemData(
-        Long infoId,
-        String name,
+        Long teamBottariId,
         LocalDateTime publishedAt
 ) {
 
     public static CreateTeamSharedItemData from(final CreateTeamSharedItemEvent event) {
         return new CreateTeamSharedItemData(
-                event.getInfoId(),
-                event.getName(),
+                event.getTeamBottariId(),
                 event.getPublishedAt()
         );
     }
