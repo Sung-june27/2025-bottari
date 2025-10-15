@@ -299,7 +299,8 @@ class BottariTemplateControllerTest {
         final CreateBottariTemplateRequest request = new CreateBottariTemplateRequest(
                 "title",
                 "description",
-                bottariTemplateItems
+                bottariTemplateItems,
+                List.of("hashtag1", "hashtag2")
         );
         given(bottariTemplateService.create(ssaid, request))
                 .willReturn(1L);

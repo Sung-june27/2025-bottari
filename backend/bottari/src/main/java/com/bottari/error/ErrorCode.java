@@ -66,6 +66,8 @@ public enum ErrorCode {
     HASHTAG_NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "해시태그 제목이 너무 깁니다."),
     HASHTAG_NAME_CONTAINS_WHITESPACE(HttpStatus.BAD_REQUEST, "해시태그에는 공백을 포함할 수 없습니다."),
     HASHTAG_NAME_INVALID_CHARACTER(HttpStatus.BAD_REQUEST, "해시태그는 한글, 영문, 숫자, 언더스코어(_)만 사용할 수 있습니다."),
+    HASHTAG_DUPLICATE_IN_REQUEST(HttpStatus.BAD_REQUEST, "요청에 중복된 해시태그가 있습니다."),
+    HASHTAG_TOO_MANY(HttpStatus.BAD_REQUEST, "해시태그가 너무 많습니다."),
     HASHTAG_ID_MISSING(HttpStatus.BAD_REQUEST,"해시태그로 템플릿 검색시 해시태그 아이디는 필수입니다."),
 
     // ===== TEAM_BOTTARI 관련 =====
@@ -114,7 +116,8 @@ public enum ErrorCode {
 
     // ===== 기타 =====
     DATE_FORMAT_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 날짜 형식입니다."),
-    NUMBER_FORMAT_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 숫자 형식입니다.");
+    NUMBER_FORMAT_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 숫자 형식입니다."),
+    ;
 
     private final HttpStatus status;
     private final String message;
