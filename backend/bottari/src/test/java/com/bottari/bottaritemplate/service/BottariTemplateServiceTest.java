@@ -160,19 +160,19 @@ class BottariTemplateServiceTest {
 
             // then
             assertAll(() -> {
-                          assertThat(actual).hasSize(2);
-                          assertThat(actual.get(0).title()).isEqualTo(memberTemplate2.getTitle());
-                          assertThat(actual.get(0).items()).hasSize(1);
-                          assertThat(actual.get(0).items().getFirst().name()).isEqualTo(item3.getName());
-                          assertThat(actual.get(0).hashtags()).hasSize(1);
-                          assertThat(actual.get(0).hashtags().getFirst().name()).isEqualTo(hashtag2.getName());
-                          assertThat(actual.get(1).title()).isEqualTo(memberTemplate1.getTitle());
-                          assertThat(actual.get(1).items()).hasSize(2);
-                          assertThat(actual.get(1).items().get(0).name()).isEqualTo(item1.getName());
-                          assertThat(actual.get(1).items().get(1).name()).isEqualTo(item2.getName());
-                          assertThat(actual.get(1).hashtags()).hasSize(1);
-                          assertThat(actual.get(1).hashtags().getFirst().name()).isEqualTo(hashtag1.getName());
-                      }
+                        assertThat(actual).hasSize(2);
+                        assertThat(actual.get(0).title()).isEqualTo(memberTemplate2.getTitle());
+                        assertThat(actual.get(0).items()).hasSize(1);
+                        assertThat(actual.get(0).items().getFirst().name()).isEqualTo(item3.getName());
+                        assertThat(actual.get(0).hashtags()).hasSize(1);
+                        assertThat(actual.get(0).hashtags().getFirst().name()).isEqualTo(hashtag2.getName());
+                        assertThat(actual.get(1).title()).isEqualTo(memberTemplate1.getTitle());
+                        assertThat(actual.get(1).items()).hasSize(2);
+                        assertThat(actual.get(1).items().get(0).name()).isEqualTo(item1.getName());
+                        assertThat(actual.get(1).items().get(1).name()).isEqualTo(item2.getName());
+                        assertThat(actual.get(1).hashtags()).hasSize(1);
+                        assertThat(actual.get(1).hashtags().getFirst().name()).isEqualTo(hashtag1.getName());
+                    }
             );
         }
 
@@ -270,7 +270,7 @@ class BottariTemplateServiceTest {
             entityManager.persist(hashtag2);
             entityManager.persist(templateHashtag2);
 
-            final BottariTemplate template3 = new BottariTemplate("subject", member);
+            final BottariTemplate template3 = new BottariTemplate("subject", "description", member);
             final BottariTemplateItem item4 = BottariTemplateItemFixture.BOTTARI_TEMPLATE_ITEM_4.get(template3);
             final Hashtag hashtag3 = HashtagFixture.HASHTAG_3.get();
             final BottariTemplateHashtag templateHashtag3 = new BottariTemplateHashtag(template3, hashtag3);
@@ -323,9 +323,9 @@ class BottariTemplateServiceTest {
             final Member member = new Member("ssaid", "name");
             entityManager.persist(member);
 
-            final BottariTemplate template1 = new BottariTemplate("template1", member);
-            final BottariTemplate template2 = new BottariTemplate("template2", member);
-            final BottariTemplate template3 = new BottariTemplate("template3", member);
+            final BottariTemplate template1 = new BottariTemplate("template1", "description1", member);
+            final BottariTemplate template2 = new BottariTemplate("template2", "description2", member);
+            final BottariTemplate template3 = new BottariTemplate("template3", "description3", member);
             entityManager.persist(template1);
             entityManager.persist(template2);
             entityManager.persist(template3);
@@ -389,8 +389,8 @@ class BottariTemplateServiceTest {
             final Member member = new Member("ssaid", "name");
             entityManager.persist(member);
 
-            final BottariTemplate template1 = new BottariTemplate("template1", member);
-            final BottariTemplate template2 = new BottariTemplate("template2", member);
+            final BottariTemplate template1 = new BottariTemplate("template1", "description1", member);
+            final BottariTemplate template2 = new BottariTemplate("template2", "description2", member);
             entityManager.persist(template1);
             entityManager.persist(template2);
 
@@ -444,9 +444,9 @@ class BottariTemplateServiceTest {
             final Member member = new Member("ssaid", "name");
             entityManager.persist(member);
 
-            final BottariTemplate template1 = new BottariTemplate("여행용 체크리스트", member);
-            final BottariTemplate template2 = new BottariTemplate("캠핑 준비물", member);
-            final BottariTemplate template3 = new BottariTemplate("출장 체크리스트", member);
+            final BottariTemplate template1 = new BottariTemplate("여행용 체크리스트", "여행용", member);
+            final BottariTemplate template2 = new BottariTemplate("캠핑 준비물", "캠핑용", member);
+            final BottariTemplate template3 = new BottariTemplate("출장 체크리스트", "출장용", member);
             entityManager.persist(template1);
             entityManager.persist(template2);
             entityManager.persist(template3);
@@ -544,9 +544,9 @@ class BottariTemplateServiceTest {
             final Member member = new Member("ssaid", "name");
             entityManager.persist(member);
 
-            final BottariTemplate template1 = new BottariTemplate("template1", member);
-            final BottariTemplate template2 = new BottariTemplate("template2", member);
-            final BottariTemplate template3 = new BottariTemplate("template3", member);
+            final BottariTemplate template1 = new BottariTemplate("template1", "description1", member);
+            final BottariTemplate template2 = new BottariTemplate("template2", "description2", member);
+            final BottariTemplate template3 = new BottariTemplate("template3", "description3", member);
             entityManager.persist(template1);
             entityManager.persist(template2);
             entityManager.persist(template3);
@@ -614,17 +614,17 @@ class BottariTemplateServiceTest {
             final Member member = new Member("ssaid", "name");
             entityManager.persist(member);
 
-            final BottariTemplate template1 = new BottariTemplate("template1", member);
-            final BottariTemplate template2 = new BottariTemplate("template2", member);
-            final BottariTemplate template3 = new BottariTemplate("template3", member);
+            final BottariTemplate template1 = new BottariTemplate("template1", "description1", member);
+            final BottariTemplate template2 = new BottariTemplate("template2", "description2", member);
+            final BottariTemplate template3 = new BottariTemplate("template3", "description3", member);
             entityManager.persist(template1);
             entityManager.persist(template2);
             entityManager.persist(template3);
             entityManager.createQuery("""
-                    UPDATE BottariTemplate bt
-                    SET bt.takenCount = bt.takenCount + 1
-                    WHERE bt.id = :id
-            """)
+                                    UPDATE BottariTemplate bt
+                                    SET bt.takenCount = bt.takenCount + 1
+                                    WHERE bt.id = :id
+                            """)
                     .setParameter("id", template2.getId())
                     .executeUpdate();
 
@@ -711,6 +711,7 @@ class BottariTemplateServiceTest {
             final List<String> bottariTemplateItems = List.of("item1", "item2", "item3");
             final CreateBottariTemplateRequest request = new CreateBottariTemplateRequest(
                     "title",
+                    "description",
                     bottariTemplateItems
             );
 
@@ -719,11 +720,11 @@ class BottariTemplateServiceTest {
 
             // then
             final List<BottariTemplateItem> actualItems = entityManager.createQuery(
-            """
-                  SELECT i
-                  FROM BottariTemplateItem i
-                  WHERE i.bottariTemplate.id =: bottariTemplateId
-             """, BottariTemplateItem.class)
+                            """
+                                         SELECT i
+                                         FROM BottariTemplateItem i
+                                         WHERE i.bottariTemplate.id =: bottariTemplateId
+                                    """, BottariTemplateItem.class)
                     .setParameter("bottariTemplateId", actual)
                     .getResultList();
 
@@ -741,6 +742,7 @@ class BottariTemplateServiceTest {
             final List<String> bottariTemplateItems = List.of("item1", "item2", "item3");
             final CreateBottariTemplateRequest request = new CreateBottariTemplateRequest(
                     "title",
+                    "description",
                     bottariTemplateItems
             );
             final String invalidSsaid = "invalid_ssaid";
@@ -761,6 +763,7 @@ class BottariTemplateServiceTest {
             final List<String> bottariTemplateItems = List.of("item1", "duplicate_item", "duplicate_item");
             final CreateBottariTemplateRequest request = new CreateBottariTemplateRequest(
                     "title",
+                    "description",
                     bottariTemplateItems
             );
 
@@ -824,7 +827,7 @@ class BottariTemplateServiceTest {
             final Member templateOwner = new Member("owner_ssaid", "owner_name");
             entityManager.persist(templateOwner);
 
-            final BottariTemplate bottariTemplate = new BottariTemplate("title", templateOwner);
+            final BottariTemplate bottariTemplate = new BottariTemplate("title", "description", templateOwner);
             entityManager.persist(bottariTemplate);
 
             final BottariTemplateItem bottariTemplateItem1 = new BottariTemplateItem("item1", bottariTemplate);
@@ -841,12 +844,12 @@ class BottariTemplateServiceTest {
 
             // then
             final BottariTemplateHistory acutalBottariTemplateHistory = entityManager.createQuery(
-            """
-                 SELECT bh
-                 FROM BottariTemplateHistory bh
-                 WHERE bh.id.memberId = :memberId
-                 AND bh.id.bottariTemplateId = :bottariTemplateId
-             """, BottariTemplateHistory.class)
+                            """
+                                        SELECT bh
+                                        FROM BottariTemplateHistory bh
+                                        WHERE bh.id.memberId = :memberId
+                                        AND bh.id.bottariTemplateId = :bottariTemplateId
+                                    """, BottariTemplateHistory.class)
                     .setParameter("memberId", member.getId())
                     .setParameter("bottariTemplateId", bottariTemplate.getId())
                     .getSingleResult();
@@ -865,7 +868,7 @@ class BottariTemplateServiceTest {
             final Member templateOwner = new Member("owner_ssaid", "owner_name");
             entityManager.persist(templateOwner);
 
-            final BottariTemplate bottariTemplate = new BottariTemplate("title", templateOwner);
+            final BottariTemplate bottariTemplate = new BottariTemplate("title", "description", templateOwner);
             entityManager.persist(bottariTemplate);
 
             final BottariTemplateItem bottariTemplateItem1 = new BottariTemplateItem("item1", bottariTemplate);
@@ -883,12 +886,12 @@ class BottariTemplateServiceTest {
 
             // then
             final Long actualHistoryCount = entityManager.createQuery(
-            """
-                       SELECT COUNT(bh)
-                       FROM BottariTemplateHistory bh
-                       WHERE bh.id.memberId = :memberId
-                       AND bh.id.bottariTemplateId = :bottariTemplateId
-            """, Long.class)
+                            """
+                                               SELECT COUNT(bh)
+                                               FROM BottariTemplateHistory bh
+                                               WHERE bh.id.memberId = :memberId
+                                               AND bh.id.bottariTemplateId = :bottariTemplateId
+                                    """, Long.class)
                     .setParameter("memberId", member.getId())
                     .setParameter("bottariTemplateId", bottariTemplate.getId())
                     .getSingleResult();
